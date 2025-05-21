@@ -1,0 +1,91 @@
+class Node:
+    def __init__(self, char):
+        self.char = char
+        self.prev = None
+        self.next = None
+
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def _is_alpha(self, char):
+        ascii_val = ord(char)
+        return (65 <= ascii_val <= 90) or (97 <= ascii_val <= 122)
+
+    def insert(self, char):
+        if not self._is_alpha(char):
+            return
+        new_node = Node(char)
+        if self.head is None:
+            self.head = self.tail = new_node
+        else:
+            self.tail.next = new_node
+            new_node.prev = self.tail
+            self.tail = new_node
+
+    def __str__(self):
+        result = ""
+        current = self.head
+        while current:
+            result += current.char
+            current = current.next
+        return result
+
+    def _get_filtered_string(self, reverse=False):
+        vowels = ['a', 'e', 'i', 'o', 'u']
+        result = ""
+        seen = ""
+
+        if reverse:
+              current = self.tail
+        else:
+              current = self.head
+
+        while current:
+            ch = current.char.lower()
+
+            # Check if it's a vowel
+            is_vowel = False
+            for v in vowels:
+                if ch == v:
+                    is_vowel = True
+                    break
+            if is_vowel:
+                if reverse:
+                    current = current.prev
+                else:
+                    current = current.next
+                continue
+
+            # Check for duplicate
+            already_seen = False
+            ptr = seen
+            for s in ptr:
+                if s == ch:
+                    already_seen = True
+                    break
+            if not already_seen:
+                seen += ch
+                result += ch
+
+            if reverse:
+                    current = current.prev
+            else:
+                    current = current.next
+
+        return result
+
+    def is_custom_palindrome(self):
+        forward_str = self._get_filtered_string(reverse=False)
+        backward_str = self._get_filtered_string(reverse=True)
+        return forward_str == backward_str
+
+
+if __name__ == "__main__":
+    input_str = input("Enter a string: ")
+    dll = DoublyLinkedList()
+    for ch in input_str:
+        dll.insert(ch)
+    print("Is custom palindrome:", dll.is_custom_palindrome())
